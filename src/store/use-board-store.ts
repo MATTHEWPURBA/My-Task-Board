@@ -1,3 +1,4 @@
+//src/store/use-board-store.ts
 import { create } from 'zustand';
 import { Board, Task, TaskFormData, BoardFormData } from '@/types';
 
@@ -16,6 +17,8 @@ interface BoardState {
   addTask: (task: TaskFormData) => Promise<void>;
   updateTask: (id: string, task: TaskFormData) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
+  updateTaskStatus: (id: string, status: string) => Promise<void>;
+
 }
 
 const useBoardStore = create<BoardState>((set, get) => ({
@@ -188,6 +191,53 @@ const useBoardStore = create<BoardState>((set, get) => ({
           loading: false,
         });
       }
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : 'An unknown error occurred',
+        loading: false,
+      });
+    }
+  },
+
+  // Add this new method
+  updateTaskStatus: async (id, status) => {
+    try {
+      const { board } = get();
+      if (!board) return;
+      
+      // Find the task in the current state
+      const task = board.tasks.find(t => t.id === id);
+      if (!task) return;
+      
+      // Skip update if status hasn't changed
+      if (task.status === status) return;
+      
+      set({ loading: true, error: null });
+      
+      const response = await fetch(`/api/tasks/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...task,
+          status
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update task status');
+      }
+      
+      const updatedTask = await response.json();
+      
+      // Update the task in the local state
+      const updatedTasks = board.tasks.map((t) => 
+        t.id === id ? updatedTask : t
+      );
+      
+      set({
+        board: { ...board, tasks: updatedTasks },
+        loading: false,
+      });
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : 'An unknown error occurred',

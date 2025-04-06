@@ -1,3 +1,4 @@
+//src/components/IconPicker.tsx
 import React, { useState, useRef } from 'react';
 import { useClickOutside } from '@/hooks/use-click-outside';
 

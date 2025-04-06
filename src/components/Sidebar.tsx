@@ -4,6 +4,8 @@
 import React, { useEffect, useState } from 'react';
 import { Task } from '@/types';
 import useBoardStore from '@/store/use-board-store';
+import IconPicker from '@/components/IconPicker'; // Import the IconPicker component
+
 
 interface SidebarProps {
   isOpen: boolean;
@@ -26,7 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, task }) => {
     name: '',
     description: '',
     icon: '📝',
-    status: 'To Do' // Default new tasks to "To Do"
+    status: 'To Do', // Default new tasks to "To Do"
   });
 
   // Update form data when task changes
@@ -115,15 +117,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, task }) => {
               <textarea name="description" value={formData.description} onChange={handleChange} rows={5} className="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Enter a short description" />
             </div>
 
-            {/* Icon selection */}
+            {/* Icon selection - Replaced with IconPicker component */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-1">Icon</label>
-              <div className="grid grid-cols-5 gap-2">
-                {emojis.map((emoji) => (
-                  <button key={emoji} type="button" onClick={() => handleIconSelect(emoji)} className={`h-10 w-10 flex items-center justify-center text-xl rounded-md ${formData.icon === emoji ? 'bg-blue-100 border-2 border-blue-500' : 'bg-gray-100 hover:bg-gray-200'}`}>
-                    {emoji}
-                  </button>
-                ))}
+              <div className="flex items-center">
+                {/* <div className="mr-2 text-lg">{formData.icon}</div> */}
+                <IconPicker 
+                  selectedIcon={formData.icon} 
+                  onChange={handleIconSelect} 
+                />
+                <p className="ml-3 text-sm text-gray-500">Click to select a different icon</p>
               </div>
             </div>
 

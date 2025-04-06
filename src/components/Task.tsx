@@ -1,6 +1,9 @@
+//src/components/Task.tsx
 import React from 'react';
 import { Task as TaskType } from '@/types';
 import { truncateText } from '@/lib/utils';
+import { useDraggable } from '@dnd-kit/core';
+
 import Modal from './ui/Modal';
 import TaskForm from './TaskForm';
 import DeleteTaskButton from './DeleteTaskButton';
@@ -94,6 +97,20 @@ const Task: React.FC<TaskProps> = ({ task, onSelect }) => {
   // );
 
 
+   // Set up draggable behavior
+   const {attributes, listeners, setNodeRef, transform, isDragging} = useDraggable({
+    id: task.id,
+    data: task
+  });
+
+
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    zIndex: 50,
+    opacity: isDragging ? 0.5 : 1 // Make original semi-transparent while dragging
+  } : undefined;
+
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'To Do':
@@ -108,43 +125,47 @@ const Task: React.FC<TaskProps> = ({ task, onSelect }) => {
         return 'bg-gray-100 text-gray-800 border-gray-400';
     }
   };
-  
-  // Get status icon
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'In Progress':
-        return '🔄';
-      case 'Completed':
-        return '✅';
-      case "Won't do":
-        return '❌';
-      default:
-        return '❓';
-    }
-  };
 
-  return (
-    <div
-      className={`bg-white p-4 rounded-lg shadow-sm border-l-4 ${getStatusColor(task.status)} cursor-pointer hover:shadow-md transition duration-200`}
-      onClick={() => onSelect(task)}
-    >
-      <div className="flex items-start gap-2">
-        <span className="text-xl flex-shrink-0" role="img" aria-label="Task icon">
-          {task.icon || '📝'}
-        </span>
-        <div className="flex-grow">
-          <h3 className="font-medium text-gray-900">{task.name}</h3>
-          
-          {task.description && (
-            <p className="mt-1 text-gray-600 text-sm">
-              {truncateText(task.description, 100)}
-            </p>
-          )}
+    // Don't apply click handler when dragging
+    const handleClick = (e: React.MouseEvent) => {
+      if (isDragging) return;
+      onSelect(task);
+    };
+    
+  
+
+
+
+    return (
+      <div
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        {...listeners}
+        className={`bg-white p-4 rounded-lg shadow-sm border-l-4 ${getStatusColor(task.status)} cursor-pointer hover:shadow-md transition duration-200 ${isDragging ? 'opacity-50' : ''}`}
+        onClick={handleClick}
+      >
+        <div className="flex items-start gap-2">
+          <span className="text-xl flex-shrink-0" role="img" aria-label="Task icon">
+            {task.icon || '📝'}
+          </span>
+          <div className="flex-grow">
+            <h3 className="font-medium text-gray-900">{task.name}</h3>
+            
+            {task.description && (
+              <p className="mt-1 text-gray-600 text-sm">
+                {truncateText(task.description, 100)}
+              </p>
+            )}
+          </div>
+        </div>
+        
+        {/* Draggable indicator */}
+        <div className="mt-2 text-xs text-gray-400">
+          {!isDragging && <span>Drag to change status</span>}
         </div>
       </div>
-    </div>
-  );
-
-};
-
-export default Task;
+    );
+  };
+  
+  export default Task;

@@ -1,3 +1,4 @@
+//src/types/index.ts
 export type Task = {
     id: string;
     name: string;

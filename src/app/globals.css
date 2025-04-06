@@ -43,28 +43,55 @@ body {
   transition: opacity 0.3s ease-in-out;
 }
 
+/* Drag and drop styles */
+.dragging {
+  cursor: grabbing;
+  pointer-events: none;
+  opacity: 0.8;
+  transform: scale(1.05);
+  z-index: 50;
+}
+
+.task-card {
+  transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
+}
+
+.task-card:hover {
+  cursor: grab;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.task-card:active {
+  cursor: grabbing;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.droppable-active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
 /* Mobile-first adjustments */
 @media (max-width: 768px) {
   /* Add extra spacing on mobile */
   .p-4 {
     padding: 1rem;
   }
-  
+
   /* Make grid columns stack */
   .grid-cols-3 {
     grid-template-columns: 1fr;
   }
-  
+
   /* Make task cards more prominent */
   .shadow-sm {
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   }
-  
+
   /* Add spacing between stacked columns */
   .gap-6 > * + * {
     margin-top: 1.5rem;
   }
-  
+
   /* Sidebar animation */
   #sidebar {
     transform: translateX(100%);
@@ -79,5 +106,32 @@ body {
   .sidebar-overlay {
     background-color: rgba(0, 0, 0, 0.5);
     transition: opacity 0.3s ease-in-out;
+  }
+
+  /* Drag and drop styles */
+  .dragging {
+    cursor: grabbing;
+    pointer-events: none;
+    opacity: 0.8;
+    transform: scale(1.05);
+    z-index: 50;
+  }
+
+  .task-card {
+    transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
+  }
+
+  .task-card:hover {
+    cursor: grab;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .task-card:active {
+    cursor: grabbing;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .droppable-active {
+    background-color: rgba(255, 255, 255, 0.2);
   }
 }
