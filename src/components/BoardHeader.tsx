@@ -21,6 +21,12 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ board }) => {
   const updateBoard = useBoardStore(state => state.updateBoard);
   const loading = useBoardStore(state => state.loading);
   
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+  
+
   const handleOpenEdit = () => {
     setIsEditing(true);
   };
@@ -34,19 +40,18 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ board }) => {
     });
   };
   
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await updateBoard(formData);
     setIsEditing(false);
   };
   
+
+
+  
   return (
-    <div className="bg-white px-4 py-5 md:px-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+    <div className="bg-white px-4 py-5 md:px-6 rounded-lg shadow-md border border-gray-50 mb-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{board.name}</h1>

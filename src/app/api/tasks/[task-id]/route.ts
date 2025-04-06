@@ -8,8 +8,31 @@ export async function PUT(
 ) {
   try {
     const taskId = params['task-id'];
+    
+    // If taskId is 'new', return an error
+    if (taskId === 'new') {
+      return NextResponse.json(
+        { error: 'Cannot update a task with ID "new". Use the create task endpoint instead.' },
+        { status: 400 }
+      );
+    }
+    
     const body = await request.json();
     
+    // Try to find the task first
+    const existingTask = await prisma.task.findUnique({
+      where: { id: taskId },
+    });
+    
+    // If task doesn't exist, return a 404
+    if (!existingTask) {
+      return NextResponse.json(
+        { error: `Task with ID ${taskId} not found` },
+        { status: 404 }
+      );
+    }
+    
+    // Now update the task
     const updatedTask = await prisma.task.update({
       where: { id: taskId },
       data: {
@@ -34,6 +57,24 @@ export async function DELETE(
 ) {
   try {
     const taskId = params['task-id'];
+    
+    // If taskId is 'new', just return success since it doesn't exist anyway
+    if (taskId === 'new') {
+      return NextResponse.json({ message: 'Task deleted successfully' });
+    }
+    
+    // Try to find the task first
+    const existingTask = await prisma.task.findUnique({
+      where: { id: taskId },
+    });
+    
+    // If task doesn't exist, return a 404
+    if (!existingTask) {
+      return NextResponse.json(
+        { error: `Task with ID ${taskId} not found` },
+        { status: 404 }
+      );
+    }
     
     await prisma.task.delete({
       where: { id: taskId }

@@ -4,7 +4,7 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-rgb: 245, 245, 245;
+  --background-rgb: 255, 255, 255;
 }
 
 body {
@@ -27,6 +27,22 @@ body {
   background-color: #a0aec0;
 }
 
+/* Sidebar animation */
+#sidebar {
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+#sidebar.open {
+  transform: translateX(0);
+}
+
+/* Optional overlay style when sidebar is open */
+.sidebar-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  transition: opacity 0.3s ease-in-out;
+}
+
 /* Mobile-first adjustments */
 @media (max-width: 768px) {
   /* Add extra spacing on mobile */
@@ -47,5 +63,21 @@ body {
   /* Add spacing between stacked columns */
   .gap-6 > * + * {
     margin-top: 1.5rem;
+  }
+  
+  /* Sidebar animation */
+  #sidebar {
+    transform: translateX(100%);
+    transition: transform 0.6s ease-in-out;
+  }
+
+  #sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Optional overlay style when sidebar is open */
+  .sidebar-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: opacity 0.3s ease-in-out;
   }
 }

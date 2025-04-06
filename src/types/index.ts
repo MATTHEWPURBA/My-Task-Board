@@ -3,7 +3,7 @@ export type Task = {
     name: string;
     description?: string | null;
     icon?: string | null;
-    status: 'In Progress' | 'Completed' | "Won't do";
+    status: 'To Do' | 'In Progress' | 'Completed' | "Won't do";
     createdAt: Date;
     updatedAt: Date;
     boardId: string;
@@ -22,7 +22,7 @@ export type Task = {
     name: string;
     description?: string;
     icon?: string;
-    status: 'In Progress' | 'Completed' | "Won't do";
+    status: 'To Do' | 'In Progress' | 'Completed' | "Won't do";
   };
   
   export type BoardFormData = {

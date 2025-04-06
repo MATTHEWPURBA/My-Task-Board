@@ -14,6 +14,12 @@ export async function POST(request: Request) {
         tasks: {
           create: [
             {
+              name: 'Task To Do',
+              description: 'This is a task that needs to be done.',
+              status: 'To Do',
+              icon: '📋'
+            },
+            {
               name: 'Task in Progress',
               description: 'This is a task currently in progress.',
               status: 'In Progress',

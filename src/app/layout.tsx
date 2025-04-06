@@ -16,8 +16,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-gray-100 min-h-screen`}>
-        <header className="bg-blue-600 text-white shadow">
+      <body className={`${inter.className} bg-gray-10 min-h-screen`}>
+        <header className="bg-blue-500 text-white shadow">
           <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
             <h1 className="text-xl font-bold">My Task Board</h1>
           </div>

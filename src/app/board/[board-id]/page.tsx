@@ -8,49 +8,35 @@ import useBoardStore from '@/store/use-board-store';
 export default function BoardPage() {
   const params = useParams();
   const boardId = params['board-id'] as string;
-  
+
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
+
+  const board = useBoardStore((state) => state.board);
+  const setBoard = useBoardStore((state) => state.setBoard);
+  const loading = useBoardStore(state => state.loading);
+  const error = useBoardStore(state => state.error);
+  const fetchBoard = useBoardStore(state => state.fetchBoard);
   
-  const board = useBoardStore(state => state.board);
-  const setBoard = useBoardStore(state => state.setBoard);
-  
+
+
   useEffect(() => {
-    const fetchBoard = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        const response = await fetch(`/api/boards/${boardId}`);
-        
-        if (!response.ok) {
-          if (response.status === 404) {
-            throw new Error('Board not found');
-          }
-          throw new Error('Failed to fetch board');
-        }
-        
-        const data = await response.json();
-        setBoard(data);
-      } catch (error) {
-        console.error('Error fetching board:', error);
-        setError(error instanceof Error ? error.message : 'An unknown error occurred');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchBoard();
-  }, [boardId, setBoard]);
-  
-  if (isLoading) {
+    // Fetch board data when the component mounts
+    fetchBoard(boardId);
+  }, [boardId, fetchBoard]);
+
+
+
+  // Show loading state
+  if (loading && !board) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="flex items-center justify-center min-h-[80vh]">
+        <div className="animate-spin w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
       </div>
     );
   }
   
+  // Show error state
   if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-12 text-center">
@@ -62,6 +48,7 @@ export default function BoardPage() {
     );
   }
   
+  // Show board not found state
   if (!board) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-12 text-center">
@@ -73,5 +60,6 @@ export default function BoardPage() {
     );
   }
   
+  // Show the task board
   return <TaskBoard board={board} />;
 }
