@@ -4,7 +4,7 @@
 
 import React, { useState } from 'react';
 import { Board, Task } from '@/types';
-import TaskComponent from './Task';
+// import TaskComponent from './Task';
 import Sidebar from './Sidebar';
 import BoardHeader from './BoardHeader';
 import DroppableColumn from './DroppableColumn';
@@ -18,7 +18,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
+// import { arrayMove } from '@dnd-kit/sortable';
 import useBoardStore from '@/store/use-board-store';
 
 
@@ -59,10 +59,10 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ board }) => {
 
 
   // Group tasks by status
-  const toDoTasks = board.tasks.filter(task => task.status === 'To Do');
-  const inProgressTasks = board.tasks.filter(task => task.status === 'In Progress');
-  const completedTasks = board.tasks.filter(task => task.status === 'Completed');
-  const wontDoTasks = board.tasks.filter(task => task.status === "Won't do");
+  // const toDoTasks = board.tasks.filter(task => task.status === 'To Do');
+  // const inProgressTasks = board.tasks.filter(task => task.status === 'In Progress');
+  // const completedTasks = board.tasks.filter(task => task.status === 'Completed');
+  // const wontDoTasks = board.tasks.filter(task => task.status === "Won't do");
   
   const getTasksByStatus = (status: string) => 
   board.tasks.filter(task => task.status === status);

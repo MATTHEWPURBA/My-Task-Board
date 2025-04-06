@@ -83,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, task }) => {
   };
 
   // Common emoji sets for task icons
-  const emojis = ['📝', '✅', '🔄', '❌', '⭐', '🔍', '📅', '📌', '⏰', '📚'];
+  // const emojis = ['📝', '✅', '🔄', '❌', '⭐', '🔍', '📅', '📌', '⏰', '📚'];
 
   if (!task) return null;
 
@@ -151,7 +151,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, task }) => {
 
                 <button type="button" onClick={() => handleStatusChange("Won't do")} className={`w-full flex items-center p-3 rounded-md ${formData.status === "Won't do" ? 'bg-red-100 border-2 border-red-400' : 'bg-gray-100 hover:bg-gray-200'}`}>
                   <span className="w-4 h-4 rounded-full bg-red-400 mr-2"></span>
-                  <span>Won't do</span>
+                  <span>Won&apos;t do</span>
                 </button>
               </div>
             </div>

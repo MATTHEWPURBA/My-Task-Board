@@ -1,6 +1,6 @@
 //src/store/use-board-store.ts
 import { create } from 'zustand';
-import { Board, Task, TaskFormData, BoardFormData } from '@/types';
+import { Board, TaskFormData, BoardFormData } from '@/types';
 
 interface BoardState {
   board: Board | null;

@@ -3,12 +3,12 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import useBoardStore from '@/store/use-board-store';
-import Button from '@/components/ui/Button';
+// import Button from '@/components/ui/Button';
 
 export default function Home() {
   const router = useRouter();
   const createNewBoard = useBoardStore(state => state.createNewBoard);
-  const loading = useBoardStore(state => state.loading);
+  // const loading = useBoardStore(state => state.loading);
   
   useEffect(() => {
     const createBoard = async () => {

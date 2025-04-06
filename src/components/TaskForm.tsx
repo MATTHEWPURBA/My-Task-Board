@@ -112,7 +112,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
         >
           <option value="In Progress">In Progress</option>
           <option value="Completed">Completed</option>
-          <option value="Won't do">Won't do</option>
+          <option value="Won't do">Won&apos;t do</option>
         </select>
       </div>
       

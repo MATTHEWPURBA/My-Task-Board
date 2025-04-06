@@ -4,10 +4,10 @@ import { Task as TaskType } from '@/types';
 import { truncateText } from '@/lib/utils';
 import { useDraggable } from '@dnd-kit/core';
 
-import Modal from './ui/Modal';
-import TaskForm from './TaskForm';
-import DeleteTaskButton from './DeleteTaskButton';
-import useBoardStore from '@/store/use-board-store';
+// import Modal from './ui/Modal';
+// import TaskForm from './TaskForm';
+// import DeleteTaskButton from './DeleteTaskButton';
+// import useBoardStore from '@/store/use-board-store';
 
 interface TaskProps {
   task: TaskType;
@@ -129,6 +129,8 @@ const Task: React.FC<TaskProps> = ({ task, onSelect }) => {
     // Don't apply click handler when dragging
     const handleClick = (e: React.MouseEvent) => {
       if (isDragging) return;
+      // For example, you might want to stop propagation
+      e.stopPropagation();
       onSelect(task);
     };
     

@@ -1,7 +1,7 @@
 //src/app/board/[board-id]/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import TaskBoard from '@/components/TaskBoard';
 import useBoardStore from '@/store/use-board-store';
@@ -10,11 +10,11 @@ export default function BoardPage() {
   const params = useParams();
   const boardId = params['board-id'] as string;
 
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   // const [error, setError] = useState<string | null>(null);
 
   const board = useBoardStore((state) => state.board);
-  const setBoard = useBoardStore((state) => state.setBoard);
+  // const setBoard = useBoardStore((state) => state.setBoard);
   const loading = useBoardStore(state => state.loading);
   const error = useBoardStore(state => state.error);
   const fetchBoard = useBoardStore(state => state.fetchBoard);
@@ -55,7 +55,7 @@ export default function BoardPage() {
       <div className="max-w-7xl mx-auto px-4 py-12 text-center">
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
           <h2 className="text-xl font-semibold text-yellow-700 mb-2">Board Not Found</h2>
-          <p className="text-yellow-600">The board you're looking for does not exist.</p>
+          <p className="text-yellow-600">The board you&apos;re looking for does not exist.</p>
         </div>
       </div>
     );

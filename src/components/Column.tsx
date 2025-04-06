@@ -1,3 +1,4 @@
+//src/components/Column.tsx
 import React from 'react';
 import { Task as TaskType } from '@/types';
 import Task from './Task';
@@ -6,9 +7,10 @@ import ColumnHeader from './ColumnHeader';
 interface ColumnProps {
   title: string;
   tasks: TaskType[];
+  onTaskSelect: (task: TaskType) => void; // Add this prop
 }
 
-const Column: React.FC<ColumnProps> = ({ title, tasks }) => {
+const Column: React.FC<ColumnProps> = ({ title, tasks ,onTaskSelect}) => {
   // Filter tasks by status matching this column
   const columnTasks = tasks.filter(task => task.status === title);
   
@@ -19,8 +21,7 @@ const Column: React.FC<ColumnProps> = ({ title, tasks }) => {
       <div className="mt-4 space-y-3">
         {columnTasks.length > 0 ? (
           columnTasks.map(task => (
-            <Task key={task.id} task={task} />
-          ))
+          <Task key={task.id} task={task} onSelect={onTaskSelect} />          ))
         ) : (
           <div className="py-8 flex items-center justify-center text-gray-400 text-sm">
             No tasks in this column
