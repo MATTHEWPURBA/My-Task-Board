@@ -77,126 +77,133 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ board }) => {
     setSidebarOpen(false);
   };
   
-  // Helper for creating the "add new task" button
-  const handleAddNewTask = () => {
-    // You can either create a template task with defaults
-    // or you can navigate to a new task page
-    // For now, let's open the sidebar with a new task template
-    setSelectedTask({
-      id: 'new', // This is a temporary ID that will be replaced
-      name: 'New Task',
-      description: '',
-      icon: '📝',
-      status: 'To Do', // Default to To Do for new tasks
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      boardId: board.id
-    });
-    setSidebarOpen(true);
-  };
-
-
-  
-  // Handle drag start
-  const handleDragStart = (event: DragStartEvent) => {
-    const { active } = event;
-    const taskId = active.id as string;
+    // Helper for creating a new task with specific status
+    const handleAddNewTaskWithStatus = (status: 'To Do' | 'In Progress' | 'Completed' | "Won't do") => {
+      // Create a template task with the specified status
+      setSelectedTask({
+        id: 'new', // This is a temporary ID that will be replaced
+        name: `New ${status} Task`,
+        description: '',
+        icon: '📝',
+        status: status,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        boardId: board.id
+      });
+      setSidebarOpen(true);
+    };
     
-    // Find the task being dragged
-    const task = board.tasks.find(t => t.id === taskId);
-    if (task) {
-      setActiveTask(task);
-    }
-  };
-  
-  // Handle drag end
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
+    // General helper for creating a new task (used by the bottom button)
+    const handleAddNewTask = () => {
+      setSelectedTask({
+        id: 'new', 
+        name: 'New Task',
+        description: '',
+        icon: '📝',
+        status: 'To Do', // Default to To Do for new tasks
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        boardId: board.id
+      });
+      setSidebarOpen(true);
+    };
     
-    if (!over) {
-      // Dropped outside of any droppable
+    // Handle drag start
+    const handleDragStart = (event: DragStartEvent) => {
+      const { active } = event;
+      const taskId = active.id as string;
+      
+      // Find the task being dragged
+      const task = board.tasks.find(t => t.id === taskId);
+      if (task) {
+        setActiveTask(task);
+      }
+    };
+    
+    // Handle drag end
+    const handleDragEnd = (event: DragEndEvent) => {
+      const { active, over } = event;
+      
+      if (!over) {
+        // Dropped outside of any droppable
+        setActiveTask(null);
+        return;
+      }
+      
+      const taskId = active.id as string;
+      const newStatus = over.id as string;
+      
+      // Update the task status if it was dropped in a different column
+      if (newStatus && statuses.includes(newStatus)) {
+        updateTaskStatus(taskId, newStatus);
+      }
+      
       setActiveTask(null);
-      return;
-    }
-    
-    const taskId = active.id as string;
-    const newStatus = over.id as string;
-    
-    // Update the task status if it was dropped in a different column
-    if (newStatus && ['To Do', 'In Progress', 'Completed', "Won't do"].includes(newStatus)) {
-      updateTaskStatus(taskId, newStatus);
-    }
-
-    // Update the task status if it was dropped in a different column
-    if (newStatus && statuses.includes(newStatus)) {
-      updateTaskStatus(taskId, newStatus);
-    }
-    
-    setActiveTask(null);
-  };
-
-  // Function to render a droppable column
-  const renderColumn = (title: string, tasks: Task[]) => {
-    let bgColor, borderColor, dotColor;
-    
-    switch (title) {
-      case 'To Do':
-        bgColor = 'bg-gray-100';
-        borderColor = 'border-gray-200';
-        dotColor = 'bg-gray-500';
-        break;
-      case 'In Progress':
-        bgColor = 'bg-yellow-100';
-        borderColor = 'border-yellow-100';
-        dotColor = 'bg-yellow-400';
-        break;
-      case 'Completed':
-        bgColor = 'bg-green-100';
-        borderColor = 'border-green-100';
-        dotColor = 'bg-green-400';
-        break;
-      case "Won't do":
-        bgColor = 'bg-red-100';
-        borderColor = 'border-red-100';
-        dotColor = 'bg-red-400';
-        break;
-      default:
-        bgColor = 'bg-gray-100';
-        borderColor = 'border-gray-200';
-        dotColor = 'bg-gray-500';
-    }
+    };
 
 
-    return (
-      <div 
-        id={title}
-        className={`${bgColor} p-4 rounded-lg border ${borderColor} min-h-[12rem]`}
-      >
-        <div className="flex items-center mb-3">
-          <span className={`w-3 h-3 ${dotColor} rounded-full mr-2`}></span>
-          <h2 className="font-bold">{title}</h2>
-          <span className={`ml-2 text-xs ${bgColor} px-2 py-1 rounded-full`}>
-            {tasks.length}
-          </span>
-        </div>
+  // // Function to render a droppable column
+  // const renderColumn = (title: string, tasks: Task[]) => {
+  //   let bgColor, borderColor, dotColor;
+    
+  //   switch (title) {
+  //     case 'To Do':
+  //       bgColor = 'bg-gray-100';
+  //       borderColor = 'border-gray-200';
+  //       dotColor = 'bg-gray-500';
+  //       break;
+  //     case 'In Progress':
+  //       bgColor = 'bg-yellow-100';
+  //       borderColor = 'border-yellow-100';
+  //       dotColor = 'bg-yellow-400';
+  //       break;
+  //     case 'Completed':
+  //       bgColor = 'bg-green-100';
+  //       borderColor = 'border-green-100';
+  //       dotColor = 'bg-green-400';
+  //       break;
+  //     case "Won't do":
+  //       bgColor = 'bg-red-100';
+  //       borderColor = 'border-red-100';
+  //       dotColor = 'bg-red-400';
+  //       break;
+  //     default:
+  //       bgColor = 'bg-gray-100';
+  //       borderColor = 'border-gray-200';
+  //       dotColor = 'bg-gray-500';
+  //   }
+
+
+  //   return (
+  //     <div 
+  //       id={title}
+  //       className={`${bgColor} p-4 rounded-lg border ${borderColor} min-h-[12rem]`}
+  //     >
+  //       <div className="flex items-center mb-3">
+  //         <span className={`w-3 h-3 ${dotColor} rounded-full mr-2`}></span>
+  //         <h2 className="font-bold">{title}</h2>
+  //         <span className={`ml-2 text-xs ${bgColor} px-2 py-1 rounded-full`}>
+  //           {tasks.length}
+  //         </span>
+  //       </div>
         
-        <div className="space-y-3 min-h-[8rem]">
-          {tasks.map(task => (
-            <TaskComponent 
-              key={task.id} 
-              task={task}
-              onSelect={handleTaskSelect}
-            />
-          ))}
-          {tasks.length === 0 && (
-            <div className="text-center p-4 text-gray-500 text-sm h-20 flex items-center justify-center border-2 border-dashed rounded-lg">
-              Drop tasks here
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
+  //       <div className="space-y-3 min-h-[8rem]">
+  //         {tasks.map(task => (
+  //           <TaskComponent 
+  //             key={task.id} 
+  //             task={task}
+  //             onSelect={handleTaskSelect}
+  //           />
+  //         ))}
+  //         {tasks.length === 0 && (
+  //           <div className="text-center p-4 text-gray-500 text-sm h-20 flex items-center justify-center border-2 border-dashed rounded-lg">
+  //             Drop tasks here
+  //           </div>
+  //         )}
+  //       </div>
+  //     </div>
+  //   );
+  // };
 
   
 
@@ -218,6 +225,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ board }) => {
               title={status}
               tasks={getTasksByStatus(status)}
               onTaskSelect={handleTaskSelect}
+              onAddNewTask={handleAddNewTaskWithStatus}
             />
           ))}
         </div>
