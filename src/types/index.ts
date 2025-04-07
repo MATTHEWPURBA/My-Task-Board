@@ -30,3 +30,5 @@ export type Task = {
     name: string;
     description?: string;
   };
+
+  export type TaskStatus = "To Do" | "In Progress" | "Completed" | "Won't do";

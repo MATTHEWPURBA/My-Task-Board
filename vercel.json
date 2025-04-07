@@ -1,14 +1,19 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "package.json",
-        "use": "@vercel/next"
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next",
+      "config": {
+        "prisma": {
+          "generate": true
+        }
       }
-    ],
+    }
+  ],
+  "build": {
     "env": {
-      "DATABASE_URL": "@database_url"
-    },
-    "buildCommand": "npm run build",
-    "installCommand": "npm install"
+      "PRISMA_GENERATE_DATAPROXY": "false"
+    }
   }
+}

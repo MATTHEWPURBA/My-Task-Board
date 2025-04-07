@@ -18,7 +18,7 @@ interface DroppableColumnProps {
   title: string;
   tasks: Task[];
   onTaskSelect: (task: Task) => void;
-  onAddNewTask: (status: 'To Do' | 'In Progress' | 'Completed' | "Won't do") => void;
+  onCreateTask?: (status: string) => void;
 }
 
 const DroppableColumn: React.FC<DroppableColumnProps> = ({ 
@@ -26,7 +26,7 @@ const DroppableColumn: React.FC<DroppableColumnProps> = ({
   title, 
   tasks, 
   onTaskSelect,
-  onAddNewTask
+  onCreateTask
 }) => {
 
 
@@ -36,16 +36,22 @@ const DroppableColumn: React.FC<DroppableColumnProps> = ({
   const [isHovering, setIsHovering] = useState(false);
   const [isTouched, setIsTouched] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showAddHint, setShowAddHint] = useState(false);
+
 
   // Setup the droppable area
   const { setNodeRef, isOver } = useDroppable({
     id
   });
   
+
+
+
+
+
+
   // Create a merged ref for the column element
   const mergedRef = useMergedRefs<HTMLDivElement>(columnRef, setNodeRef);
-
-  
 
  // Detect if we're on mobile
  useEffect(() => {
@@ -121,13 +127,13 @@ useEffect(() => {
   }
 
 
- // Handle adding a new task with this column's status
- const handleAddTask = (e: React.MouseEvent) => {
-  e.stopPropagation(); // Prevent column click
-  onAddNewTask(id as 'To Do' | 'In Progress' | 'Completed' | "Won't do");
-  setIsTouched(false);
-  setIsHovering(false);
-};
+//  // Handle adding a new task with this column's status
+//  const handleAddTask = (e: React.MouseEvent) => {
+//   e.stopPropagation(); // Prevent column click
+//   onAddNewTask(id as 'To Do' | 'In Progress' | 'Completed' | "Won't do");
+//   setIsTouched(false);
+//   setIsHovering(false);
+// };
     
 
  // Handle touch/click on column (for mobile)
@@ -138,6 +144,23 @@ useEffect(() => {
 };
 
 
+const handleCreateTask = () => {
+  if (onCreateTask) {
+    onCreateTask(id);
+  }
+};
+
+  // Get status-specific emojis for empty state
+  const getEmptyStateEmoji = () => {
+    switch (id) {
+      case 'To Do': return '📋';
+      case 'In Progress': return '⏳';
+      case 'Completed': return '✅';
+      case "Won't do": return '❌';
+      default: return '📋';
+    }
+  };
+
 
 // Show notification popup?
 const showNotification = (isHovering && !isMobile) || (isTouched && isMobile);
@@ -145,13 +168,10 @@ const showNotification = (isHovering && !isMobile) || (isTouched && isMobile);
 
 return (
   <div 
-    ref={mergedRef}
-    className={`${bgColor} ${hoverClass} p-4 rounded-lg border ${borderColor} min-h-[12rem] transition-colors duration-200 relative`}
-    onMouseEnter={() => !isMobile && setIsHovering(true)}
-    onMouseLeave={() => !isMobile && setIsHovering(false)}
-    onClick={handleColumnTouch}
-    role="region"
-    aria-label={`${title} column`}
+    ref={setNodeRef}
+    className={`${bgColor} ${hoverClass} p-4 rounded-lg border ${borderColor} min-h-[12rem] transition-colors duration-200`}
+    onMouseEnter={() => setIsHovering(true)}
+    onMouseLeave={() => setIsHovering(false)}
   >
     <div className="flex items-center mb-3">
       <span className={`w-3 h-3 ${dotColor} rounded-full mr-2`}></span>
@@ -161,7 +181,9 @@ return (
       </span>
     </div>
     
-    <div className={`space-y-3 min-h-[8rem] ${isOver ? 'bg-white/30 rounded-lg p-2' : ''}`}>
+    <div 
+      className={`space-y-3 min-h-[8rem] ${isOver ? 'bg-white/30 rounded-lg p-2' : ''} relative`}
+    >
       {tasks.map(task => (
         <TaskComponent 
           key={task.id} 
@@ -169,67 +191,72 @@ return (
           onSelect={onTaskSelect}
         />
       ))}
+      
+      {/* Empty state with animation */}
       {tasks.length === 0 && (
-        <div 
-          className={`text-center p-4 text-gray-500 text-sm h-20 flex items-center justify-center border-2 border-dashed rounded-lg ${isOver ? 'bg-white/50 border-blue-300' : ''}`}
-        >
-          {isOver ? 'Drop here' : 'No tasks'}
-        </div>
-      )}
-    </div>
-
-    {/* Notification popup for adding a new task */}
-    <AnimatePresence>
-      {showNotification && (
         <motion.div 
-          ref={popupRef}
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
-          {...popIn}
-          onClick={(e) => e.stopPropagation()}
+          className={`text-center p-4 text-gray-500 text-sm h-48 flex flex-col items-center justify-center border-2 border-dashed rounded-lg cursor-pointer
+            ${isOver ? 'bg-white/50 border-blue-300' : ''}
+            ${isHovering ? 'border-blue-300 bg-blue-50/30' : ''}`}
+          onClick={handleCreateTask}
+          onHoverStart={() => setShowAddHint(true)}
+          onHoverEnd={() => setShowAddHint(false)}
+          whileHover={{ scale: 1.03 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >
-          <div className="bg-white shadow-lg rounded-lg p-4 w-64 md:w-72 border border-gray-100">
-            <h3 className="font-medium text-gray-800 mb-2">Add a task to {title}?</h3>
-            <p className="text-sm text-gray-600 mb-3">
-              Create a new task with {title.toLowerCase()} status
-            </p>
-            <button
-              onClick={handleAddTask}
-              className={`w-full ${buttonBgColor} text-white py-2 px-4 rounded-md flex items-center justify-center transition-all duration-200 transform hover:scale-105`}
-            >
-              <span className="mr-2">+</span> Add task to {title}
-            </button>
-          </div>
+          <AnimatePresence>
+            {showAddHint || isHovering ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="flex flex-col items-center"
+              >
+                <span className="text-3xl mb-2">+</span>
+                <p className="font-medium text-blue-600">Add a task</p>
+                <p className="text-xs mt-1">Click to create a new task</p>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                {isOver ? 'Drop here' : 'No tasks'}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
-    </AnimatePresence>
-    
-    {/* Mobile indicator - subtle hint that column is tappable */}
-    {isMobile && !isTouched && (
-      <motion.div 
-        className="absolute top-2 right-2"
-        animate={pulse.animate}
-      >
-        <span className="flex h-2 w-2 relative">
-          <span className={`absolute inline-flex h-full w-full rounded-full ${dotColor} opacity-75`}></span>
-          <span className={`relative inline-flex rounded-full h-2 w-2 ${dotColor}`}></span>
-        </span>
-      </motion.div>
-    )}
-    
-    {/* Background overlay when popup is shown */}
-    <AnimatePresence>
-      {showNotification && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-black/5 rounded-lg z-10"
-        />
+      
+      {/* Extra space for adding new tasks even when there are existing tasks */}
+      {tasks.length > 0 && (
+        <motion.div 
+          className={`mt-4 h-16 border-2 border-dashed rounded-lg cursor-pointer flex items-center justify-center
+            ${isHovering ? 'border-blue-300 bg-blue-50/30' : 'border-transparent bg-transparent'}
+          `}
+          onClick={handleCreateTask}
+          whileHover={{ scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+        >
+          <AnimatePresence>
+            {isHovering && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex items-center text-blue-600"
+              >
+                <span className="text-lg mr-1">+</span>
+                <span className="text-sm">Add task</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       )}
-    </AnimatePresence>
+    </div>
   </div>
 );
 };
-
 
 export default DroppableColumn;
