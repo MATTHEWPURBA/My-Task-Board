@@ -1,6 +1,6 @@
 // src/hooks/use-merged-refs.ts
 import { useCallback } from 'react';
-import type { Ref, RefCallback, MutableRefObject } from 'react';
+import type { Ref, RefCallback } from 'react';
 
 /**
  * Custom hook to merge multiple refs into a single ref callback.
