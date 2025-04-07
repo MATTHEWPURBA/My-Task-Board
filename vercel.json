@@ -11,11 +11,6 @@
       }
     }
   ],
-  "build": {
-    "env": {
-      "PRISMA_GENERATE_DATAPROXY": "false"
-    }
-  },
   "env": {
     "NEXTAUTH_URL": "https://my-task-board-h8z8n72y3-robherto-matthews-projects.vercel.app"
   }
