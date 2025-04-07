@@ -4,18 +4,19 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-rgb: 255, 255, 255;
+  --background-rgb: 250, 250, 252;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
+  min-height: 100vh;
 }
 
 /* Custom scrollbar for a better UI experience */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -70,8 +71,53 @@ body {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
+/* Animation for task hover effect */
+.task-add-hint {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s ease-in-out;
+}
+
+.task-column:hover .task-add-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Empty state animations */
+.empty-state-pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+/* Notification animation */
+.notification-slide {
+  animation: slide-up 0.3s ease-out forwards;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Mobile-first adjustments */
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   /* Add extra spacing on mobile */
   .p-4 {
     padding: 1rem;
@@ -92,46 +138,42 @@ body {
     margin-top: 1.5rem;
   }
 
-  /* Sidebar animation */
+  /* Full-width sidebar on mobile */
   #sidebar {
-    transform: translateX(100%);
-    transition: transform 0.6s ease-in-out;
+    width: 100%;
   }
 
-  #sidebar.open {
-    transform: translateX(0);
-  }
-
-  /* Optional overlay style when sidebar is open */
-  .sidebar-overlay {
-    background-color: rgba(0, 0, 0, 0.5);
-    transition: opacity 0.3s ease-in-out;
-  }
-
-  /* Drag and drop styles */
-  .dragging {
-    cursor: grabbing;
-    pointer-events: none;
-    opacity: 0.8;
-    transform: scale(1.05);
-    z-index: 50;
-  }
-
+  /* Adjust task card padding for touch targets */
   .task-card {
-    transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
+    padding: 1rem;
   }
 
-  .task-card:hover {
-    cursor: grab;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* Make form elements larger for touch */
+  input, textarea, select, button {
+    font-size: 16px; /* Prevents iOS zoom on focus */
+    padding: 0.75rem;
   }
+}
 
-  .task-card:active {
-    cursor: grabbing;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Medium screens and up */
+@media (min-width: 768px) {
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
+}
 
-  .droppable-active {
-    background-color: rgba(255, 255, 255, 0.2);
+/* Larger screens */
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Extra large screens */
+@media (min-width: 1280px) {
+  .max-w-7xl {
+    max-width: 80rem;
   }
 }

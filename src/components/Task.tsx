@@ -3,6 +3,7 @@ import React from 'react';
 import { Task as TaskType } from '@/types';
 import { truncateText } from '@/lib/utils';
 import { useDraggable } from '@dnd-kit/core';
+import { motion } from 'framer-motion';
 
 // import Modal from './ui/Modal';
 // import TaskForm from './TaskForm';
@@ -139,13 +140,19 @@ const Task: React.FC<TaskProps> = ({ task, onSelect }) => {
 
 
     return (
-      <div
+      <motion.div
         ref={setNodeRef}
         style={style}
         {...attributes}
         {...listeners}
         className={`bg-white p-4 rounded-lg shadow-sm border-l-4 ${getStatusColor(task.status)} cursor-pointer hover:shadow-md transition duration-200 ${isDragging ? 'opacity-50' : ''}`}
         onClick={handleClick}
+        whileHover={{ scale: 1.02, boxShadow: "0 5px 10px rgba(0,0,0,0.05)" }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+        layout
       >
         <div className="flex items-start gap-2">
           <span className="text-xl flex-shrink-0" role="img" aria-label="Task icon">
@@ -163,10 +170,17 @@ const Task: React.FC<TaskProps> = ({ task, onSelect }) => {
         </div>
         
         {/* Draggable indicator */}
-        <div className="mt-2 text-xs text-gray-400">
-          {!isDragging && <span>Drag to change status</span>}
+        <div className="mt-2 text-xs text-gray-400 flex items-center">
+          {!isDragging && (
+            <>
+              <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 11V13H6V11H18Z" fill="currentColor" />
+              </svg>
+              <span>Drag to change status</span>
+            </>
+          )}
         </div>
-      </div>
+      </motion.div>
     );
   };
   

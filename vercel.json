@@ -3,9 +3,17 @@
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel/next"
+      "use": "@vercel/next",
+      "config": {
+        "prisma": {
+          "generate": true
+        }
+      }
     }
   ],
-  "buildCommand": "npm run build",
-  "installCommand": "npm install"
+  "build": {
+    "env": {
+      "PRISMA_GENERATE_DATAPROXY": "false"
+    }
+  }
 }

@@ -6,7 +6,9 @@ import Modal from './ui/Modal';
 import Input from './ui/Input';
 import TextArea from './ui/TextArea';
 import useBoardStore from '@/store/use-board-store';
-// import AddTaskButton from './AddTaskButton';
+import AddTaskButton from './AddTaskButton';
+import { motion } from 'framer-motion';
+
 
 interface BoardHeaderProps {
   board: Board;
@@ -47,27 +49,40 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ board }) => {
   };
   
   return (
-    <div className="bg-white px-4 py-5 md:px-6 rounded-lg shadow-md border border-gray-50 mb-6">
+    <motion.div 
+      className="bg-white px-4 py-5 md:px-6 rounded-lg shadow-md border border-gray-50 mb-6"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-5xl font-normal text-gray-900 flex items-center">
-            {board.name}
-            <button 
+        <div className="flex-grow">
+          <div className="flex items-center">
+            <h1 className="text-3xl sm:text-4xl font-medium text-gray-900 break-words">
+              {board.name}
+            </h1>
+            <motion.button 
               onClick={handleOpenEdit} 
-              className="ml-2 text-3xl opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
+              className="ml-2 text-xl opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
               aria-label="Edit board"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
             >
               ✏️
-            </button>
-          </h1>
+            </motion.button>
+          </div>
           {board.description && (
-            <p className="mt-6 text-gray-600">{board.description}</p>
+            <p className="mt-3 text-gray-600 max-w-2xl">{board.description}</p>
           )}
         </div>
         
-        {/* Maintaining the column/spacing structure but without the button */}
-        <div className="flex flex-col md:flex-row gap-2 invisible md:w-28">
-          {/* Invisible placeholder to maintain layout spacing */}
+        <div className="flex mt-2 md:mt-0">
+          <button 
+            onClick={handleOpenEdit}
+            className="text-blue-600 hover:text-blue-800 font-medium py-2 px-4 rounded-md hover:bg-blue-50 transition-colors md:hidden"
+          >
+            Edit Board
+          </button>
         </div>
       </div>
       
@@ -116,7 +131,7 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ board }) => {
           </div>
         </form>
       </Modal>
-    </div>
+    </motion.div>
   );
 };
 
