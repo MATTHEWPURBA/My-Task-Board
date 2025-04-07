@@ -1,7 +1,7 @@
 //src/app/board/[board-id]/page.tsx
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect} from 'react';
 import { useParams } from 'next/navigation';
 import TaskBoard from '@/components/TaskBoard';
 import useBoardStore from '@/store/use-board-store';

@@ -18,7 +18,6 @@ interface BoardState {
   updateTask: (id: string, task: TaskFormData) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
   updateTaskStatus: (id: string, status: string) => Promise<void>;
-
 }
 
 const useBoardStore = create<BoardState>((set, get) => ({
@@ -30,13 +29,13 @@ const useBoardStore = create<BoardState>((set, get) => ({
   fetchBoard: async (boardId) => {
     try {
       set({ loading: true, error: null });
-      
+
       const response = await fetch(`/api/boards/${boardId}`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch board');
       }
-      
+
       const board = await response.json();
       set({ board, loading: false });
     } catch (error) {
@@ -206,36 +205,34 @@ const useBoardStore = create<BoardState>((set, get) => ({
     try {
       const { board } = get();
       if (!board) return;
-      
+
       // Find the task in the current state
-      const task = board.tasks.find(t => t.id === id);
+      const task = board.tasks.find((t) => t.id === id);
       if (!task) return;
-      
+
       // Skip update if status hasn't changed
       if (task.status === status) return;
-      
+
       set({ loading: true, error: null });
-      
+
       const response = await fetch(`/api/tasks/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...task,
-          status
+          status,
         }),
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to update task status');
       }
-      
+
       const updatedTask = await response.json();
-      
+
       // Update the task in the local state
-      const updatedTasks = board.tasks.map((t) => 
-        t.id === id ? updatedTask : t
-      );
-      
+      const updatedTasks = board.tasks.map((t) => (t.id === id ? updatedTask : t));
+
       set({
         board: { ...board, tasks: updatedTasks },
         loading: false,

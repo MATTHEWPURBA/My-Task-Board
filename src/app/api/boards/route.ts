@@ -50,6 +50,8 @@ export async function POST(request: Request) {
   } catch (error) {
     // Enhanced error logging
     console.error('Error creating board:', error);
+    // Enhanced error logging
+    console.error('Error creating board:', error);
     
     // Return more specific error information
     const errorMessage = error instanceof Error 

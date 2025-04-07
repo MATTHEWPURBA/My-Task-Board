@@ -6,8 +6,6 @@ import useBoardStore from '@/store/use-board-store';
 import { getRandomEmoji } from '@/lib/utils';
 import { TaskFormData } from '@/types';
 
-
-
 const AddTaskButton: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const addTask = useBoardStore(state => state.addTask);
