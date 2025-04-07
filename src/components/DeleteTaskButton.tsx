@@ -1,3 +1,5 @@
+// This component is responsible for rendering a button that allows users to delete a task.
+// src/components/DeleteTaskButton.tsx
 import React, { useState } from 'react';
 import Button from './ui/Button';
 import Modal from './ui/Modal';

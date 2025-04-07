@@ -1,3 +1,4 @@
+// src/components/ColumnHeader.tsx
 import React from 'react';
 
 interface ColumnHeaderProps {

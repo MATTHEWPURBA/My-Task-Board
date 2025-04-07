@@ -1,3 +1,4 @@
+//src/app/board/[board-id]/loading.tsx
 import React from 'react';
 
 export default function Loading() {
