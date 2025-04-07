@@ -5,9 +5,9 @@ import { Task } from '@/types';
 import TaskComponent from './Task';
 import { useDroppable } from '@dnd-kit/core';
 import { motion, AnimatePresence } from 'framer-motion';
-import { popIn, pulse } from '@/lib/animation';
+// import { popIn, pulse } from '@/lib/animation';
 import { useClickOutside } from '@/hooks/use-click-outside';
-import { useMergedRefs } from '@/hooks/use-merged-refs';
+// import { useMergedRefs } from '@/hooks/use-merged-refs';
 
 
 
@@ -31,11 +31,11 @@ const DroppableColumn: React.FC<DroppableColumnProps> = ({
 
 
  // Setup refs and state
-  const columnRef = useRef<HTMLDivElement>(null);
+  // const columnRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
   const [isHovering, setIsHovering] = useState(false);
   const [isTouched, setIsTouched] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  // const [isMobile, setIsMobile] = useState(false);
   const [showAddHint, setShowAddHint] = useState(false);
 
 
@@ -51,21 +51,21 @@ const DroppableColumn: React.FC<DroppableColumnProps> = ({
 
 
   // Create a merged ref for the column element
-  const mergedRef = useMergedRefs<HTMLDivElement>(columnRef, setNodeRef);
+  // const mergedRef = useMergedRefs<HTMLDivElement>(columnRef, setNodeRef);
 
  // Detect if we're on mobile
- useEffect(() => {
-   const checkMobile = () => {
-     setIsMobile(window.innerWidth < 768);
-   };
+//  useEffect(() => {
+//    const checkMobile = () => {
+//      setIsMobile(window.innerWidth < 768);
+//    };
    
-   checkMobile();
-   window.addEventListener('resize', checkMobile);
+//    checkMobile();
+//    window.addEventListener('resize', checkMobile);
    
-   return () => {
-     window.removeEventListener('resize', checkMobile);
-   };
- }, []);
+//    return () => {
+//      window.removeEventListener('resize', checkMobile);
+//    };
+//  }, []);
  
 
    // Close popup when clicking outside (mobile)
@@ -86,7 +86,12 @@ useEffect(() => {
 }, [isTouched]);
   
   // Set column styles based on type
-  let bgColor, borderColor, dotColor, hoverClass, buttonBgColor;
+  let bgColor, 
+  borderColor, 
+  dotColor, 
+  hoverClass
+  // buttonBgColor
+  ;
 
   
   switch (id) {
@@ -95,35 +100,35 @@ useEffect(() => {
       borderColor = 'border-gray-200';
       dotColor = 'bg-gray-500';
       hoverClass = isOver ? 'bg-gray-200' : '';
-      buttonBgColor = 'bg-gray-500 hover:bg-gray-600';
+      // buttonBgColor = 'bg-gray-500 hover:bg-gray-600';
       break;
     case 'In Progress':
       bgColor = 'bg-yellow-100';
       borderColor = 'border-yellow-200';
       dotColor = 'bg-yellow-400';
       hoverClass = isOver ? 'bg-yellow-200' : '';
-      buttonBgColor = 'bg-yellow-400 hover:bg-yellow-500';
+      // buttonBgColor = 'bg-yellow-400 hover:bg-yellow-500';
       break;
     case 'Completed':
       bgColor = 'bg-green-100';
       borderColor = 'border-green-200';
       dotColor = 'bg-green-400';
       hoverClass = isOver ? 'bg-green-200' : '';
-      buttonBgColor = 'bg-green-500 hover:bg-green-600';
+      // buttonBgColor = 'bg-green-500 hover:bg-green-600';
       break;
     case "Won't do":
       bgColor = 'bg-red-100';
       borderColor = 'border-red-200';
       dotColor = 'bg-red-400';
       hoverClass = isOver ? 'bg-red-200' : '';
-      buttonBgColor = 'bg-red-500 hover:bg-red-600';
+      // buttonBgColor = 'bg-red-500 hover:bg-red-600';
       break;
     default:
       bgColor = 'bg-gray-100';
       borderColor = 'border-gray-200';
       dotColor = 'bg-gray-500';
       hoverClass = isOver ? 'bg-gray-200' : '';
-      buttonBgColor = 'bg-gray-500 hover:bg-gray-600';
+      // buttonBgColor = 'bg-gray-500 hover:bg-gray-600';
   }
 
 
@@ -137,11 +142,11 @@ useEffect(() => {
     
 
  // Handle touch/click on column (for mobile)
- const handleColumnTouch = () => {
-  if (isMobile && !isTouched) {
-    setIsTouched(true);
-  }
-};
+//  const handleColumnTouch = () => {
+//   if (isMobile && !isTouched) {
+//     setIsTouched(true);
+//   }
+// };
 
 
 const handleCreateTask = () => {
@@ -151,19 +156,19 @@ const handleCreateTask = () => {
 };
 
   // Get status-specific emojis for empty state
-  const getEmptyStateEmoji = () => {
-    switch (id) {
-      case 'To Do': return '📋';
-      case 'In Progress': return '⏳';
-      case 'Completed': return '✅';
-      case "Won't do": return '❌';
-      default: return '📋';
-    }
-  };
+  // const getEmptyStateEmoji = () => {
+  //   switch (id) {
+  //     case 'To Do': return '📋';
+  //     case 'In Progress': return '⏳';
+  //     case 'Completed': return '✅';
+  //     case "Won't do": return '❌';
+  //     default: return '📋';
+  //   }
+  // };
 
 
 // Show notification popup?
-const showNotification = (isHovering && !isMobile) || (isTouched && isMobile);
+// const showNotification = (isHovering && !isMobile) || (isTouched && isMobile);
 
 
 return (

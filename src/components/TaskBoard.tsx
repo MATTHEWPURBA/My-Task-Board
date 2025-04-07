@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Board, Task, TaskStatus } from '@/types';
-import TaskComponent from './Task';
+// import TaskComponent from './Task';
 import Sidebar from './Sidebar';
 import BoardHeader from './BoardHeader';
 import DroppableColumn from './DroppableColumn';
@@ -32,7 +32,9 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ board }) => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
-  const [showEmptyNotification, setShowEmptyNotification] = useState(false);
+  const [
+    showEmptyNotification, 
+    setShowEmptyNotification] = useState(false);
   const [notification, setNotification] = useState<{
     show: boolean;
     message: string;
@@ -70,10 +72,10 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ board }) => {
   );
 
   // Group tasks by status
-  const toDoTasks = board.tasks.filter(task => task.status === 'To Do');
-  const inProgressTasks = board.tasks.filter(task => task.status === 'In Progress');
-  const completedTasks = board.tasks.filter(task => task.status === 'Completed');
-  const wontDoTasks = board.tasks.filter(task => task.status === "Won't do");
+  // const toDoTasks = board.tasks.filter(task => task.status === 'To Do');
+  // const inProgressTasks = board.tasks.filter(task => task.status === 'In Progress');
+  // const completedTasks = board.tasks.filter(task => task.status === 'Completed');
+  // const wontDoTasks = board.tasks.filter(task => task.status === "Won't do");
   
   const getTasksByStatus = (status: string) => 
   board.tasks.filter(task => task.status === status);
@@ -156,40 +158,46 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ board }) => {
     <div className="max-w-7xl mx-auto p-4">
       <BoardHeader board={board} />
       
-      <DndContext
-        sensors={sensors}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {statuses.map((status) => (
-            <DroppableColumn
-              key={status}
-              id={status}
-              title={status}
-              tasks={getTasksByStatus(status)}
-              onTaskSelect={handleTaskSelect}
-              onCreateTask={(status) => handleAddNewTask(status as TaskStatus)}
-            />
-          ))}
-        </div>
-        
-        {/* Drag Overlay - shows a preview of the task being dragged */}
-        <DragOverlay>
-          {activeTask ? (
-            <div className="bg-white p-4 rounded-lg shadow-lg border-2 border-blue-400 opacity-80 w-64">
-              <div className="flex items-start gap-2">
-                <span className="text-xl flex-shrink-0">
-                  {activeTask.icon || '📝'}
-                </span>
-                <div className="flex-grow">
-                  <h3 className="font-medium text-gray-900">{activeTask.name}</h3>
+      {showEmptyNotification ? (
+        <EmptyBoardNotification 
+          onAddTask={() => handleAddNewTask()} 
+        />
+      ) : (
+        <DndContext
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {statuses.map((status) => (
+              <DroppableColumn
+                key={status}
+                id={status}
+                title={status}
+                tasks={getTasksByStatus(status)}
+                onTaskSelect={handleTaskSelect}
+                onCreateTask={(status) => handleAddNewTask(status as TaskStatus)}
+              />
+            ))}
+          </div>
+          
+          {/* Drag Overlay - shows a preview of the task being dragged */}
+          <DragOverlay>
+            {activeTask ? (
+              <div className="bg-white p-4 rounded-lg shadow-lg border-2 border-blue-400 opacity-80 w-64">
+                <div className="flex items-start gap-2">
+                  <span className="text-xl flex-shrink-0">
+                    {activeTask.icon || '📝'}
+                  </span>
+                  <div className="flex-grow">
+                    <h3 className="font-medium text-gray-900">{activeTask.name}</h3>
+                  </div>
                 </div>
               </div>
-            </div>
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      )}
       
       {/* Add new task button */}
       <div className="sticky bottom-0 bg-white p-4 border-t border-gray-200 mt-8">
@@ -236,5 +244,6 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ board }) => {
     </div>
   );
 };
+
 
 export default TaskBoard;
