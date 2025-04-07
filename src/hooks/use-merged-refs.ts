@@ -22,7 +22,7 @@ export function useMergedRefs<T>(...refs: Array<Ref<T> | undefined>): RefCallbac
         // This is a special way to update a ref's current property
         // Using TypeScript's type assertion to bypass the readonly constraint
         // It's safe in this context since we're just setting the ref value as React would
-        (ref as any).current = element;
+        // (ref as any).current = element;
       }
     });
   }, [refs]);

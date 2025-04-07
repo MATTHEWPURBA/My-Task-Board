@@ -232,7 +232,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, task }) => {
                       className={`w-full flex items-center p-3 rounded-md ${formData.status === "Won't do" ? 'bg-red-100 border-2 border-red-400' : 'bg-gray-50 hover:bg-gray-100'}`}
                     >
                       <span className="w-4 h-4 rounded-full bg-red-400 mr-2"></span>
-                      <span>Won't do</span>
+                      <span>Won&apos;t do</span>
                     </button>
                   </div>
                 </div>

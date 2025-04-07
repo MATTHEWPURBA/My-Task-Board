@@ -1,7 +1,7 @@
 // src/hooks/use-task-management.ts
 import { useState, useCallback } from 'react';
 import { Task, TaskStatus } from '@/types';
-import useBoardStore from '@/store/use-board-store';
+// import useBoardStore from '@/store/use-board-store';
 
 interface UseTaskManagementReturn {
   selectedTask: Task | null;

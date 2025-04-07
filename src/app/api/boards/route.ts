@@ -49,6 +49,17 @@ export async function POST(request: Request) {
     return NextResponse.json(newBoard);
   } catch (error) {
     console.error('Error creating board:', error);
-    return NextResponse.json({ error: 'Failed to create board' }, { status: 500 });
+    // Enhanced error logging
+    console.error('Error creating board:', error);
+    
+    // Return more specific error information
+    const errorMessage = error instanceof Error 
+      ? error.message 
+      : 'Unknown database error';
+      
+    return NextResponse.json(
+      { error: 'Failed to create board', details: errorMessage }, 
+      { status: 500 }
+    );
   }
 }

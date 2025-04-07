@@ -38,7 +38,7 @@ export async function PUT(
     // Check if this is a board update or task addition
     if (body.action === 'addTask') {
       // Adding a new task to the board
-      const newTask = await prisma.task.create({
+      await prisma.task.create({
         data: {
           name: body.task.name || 'New Task',
           description: body.task.description || '',

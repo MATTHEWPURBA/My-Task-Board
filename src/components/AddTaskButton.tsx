@@ -4,6 +4,7 @@ import Modal from './ui/Modal';
 import TaskForm from './TaskForm';
 import useBoardStore from '@/store/use-board-store';
 import { getRandomEmoji } from '@/lib/utils';
+import { TaskFormData } from '@/types';
 
 const AddTaskButton: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,7 +19,7 @@ const AddTaskButton: React.FC = () => {
     setIsModalOpen(false);
   };
   
-  const handleAddTask = async (formData: any) => {
+  const handleAddTask = async (formData: TaskFormData) => {
     await addTask(formData);
     setIsModalOpen(false);
   };

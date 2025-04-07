@@ -6,7 +6,7 @@ import Modal from './ui/Modal';
 import Input from './ui/Input';
 import TextArea from './ui/TextArea';
 import useBoardStore from '@/store/use-board-store';
-import AddTaskButton from './AddTaskButton';
+// import AddTaskButton from './AddTaskButton';
 import { motion } from 'framer-motion';
 
 
