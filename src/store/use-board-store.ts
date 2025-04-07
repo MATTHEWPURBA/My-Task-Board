@@ -88,8 +88,10 @@ const useBoardStore = create<BoardState>((set, get) => ({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create board');
+        const errorData = await response.json();
+        throw new Error(errorData.details || 'Failed to create board');
       }
+  
 
       const newBoard = await response.json();
       set({ board: newBoard, loading: false });
