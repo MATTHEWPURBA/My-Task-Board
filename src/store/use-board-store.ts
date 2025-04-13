@@ -297,7 +297,7 @@ const useBoardStore = create<BoardState>((set, get) => ({
       if (response.ok) {
         const data = await response.json();
         set({ 
-          hasGoogleCalendarAccess: data.calendars && data.calendars.length > 0 
+          hasGoogleCalendarAccess: !!data.googleConnected 
         });
       } else if (response.status === 401) {
         // Don't show error for auth issues - just set to false
@@ -305,6 +305,7 @@ const useBoardStore = create<BoardState>((set, get) => ({
       }
     } catch (error) {
       // Simply set to false without logging the error to avoid console noise
+      console.log('Unable to check Google Calendar access - defaulting to false');
       set({ hasGoogleCalendarAccess: false });
     }
   },

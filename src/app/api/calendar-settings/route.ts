@@ -37,20 +37,36 @@ export async function GET(request: NextRequest) {
     // Get the user's available Google Calendars
     let calendars: calendar_v3.Schema$CalendarListEntry[] = [];
 
+
+    let googleConnected = false;
+
+
+
     try {
-      calendars = await listCalendars(userId);
-    } catch (error) {
-      console.error("Error fetching calendars:", error);
-      // If there's an error fetching calendars, continue with empty list
-      // This could happen if the user hasn't connected their Google account yet
-    }
+        calendars = await listCalendars(userId);
+        // If we got calendars back, the user is connected to Google
+        googleConnected = calendars.length > 0;
+      } catch (error) {
+        // This catch block should no longer be needed with our fixes,
+        // but we'll keep it for robustness
+        console.error("Error fetching calendars:", error);
+        // If there's an error fetching calendars, continue with empty list
+      }
+      
     
-    return NextResponse.json({ settings, calendars });
+
+      return NextResponse.json({ 
+        settings, 
+        calendars,
+        googleConnected 
+      });
+      
   } catch (error) {
     console.error('Error getting calendar settings:', error);
     return NextResponse.json({ error: 'Failed to get calendar settings' }, { status: 500 });
   }
 }
+
 
 // PUT /api/calendar-settings - Update user's calendar settings
 export async function PUT(request: NextRequest) {

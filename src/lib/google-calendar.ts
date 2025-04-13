@@ -6,9 +6,16 @@ import prisma from './db';
 
 // Get a list of the user's calendars
 export async function listCalendars(userId: string) {
-  const calendar = await getCalendarApi(userId);
+    const calendar = await getCalendarApi(userId);
+
+  // If calendar is null, user is not authenticated, return empty array
+  if (!calendar) {
+    return [];
+  }
+
   const response = await calendar.calendarList.list();
   return response.data.items || [];
+
 }
 
 // Create a new event in Google Calendar
@@ -19,6 +26,11 @@ export async function createCalendarEvent(userId: string, task: Task): Promise<s
     }
 
     const calendar = await getCalendarApi(userId);
+
+        // If calendar is null, user is not authenticated
+        if (!calendar) {
+            return null;
+          }
     
     // Get user's calendar settings
     const user = await prisma.user.findUnique({
@@ -89,6 +101,12 @@ export async function updateCalendarEvent(userId: string, task: Task): Promise<b
 
     const calendar = await getCalendarApi(userId);
     
+        // If calendar is null, user is not authenticated
+        if (!calendar) {
+            return false;
+          }
+
+
     // Get user's calendar settings
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -107,40 +125,43 @@ export async function updateCalendarEvent(userId: string, task: Task): Promise<b
       return false;
     }
     
-    // Update event resource
-    const eventResource: calendar_v3.Schema$Event = {
-      ...existingEvent.data,
-      summary: task.name,
-      description: task.description || '',
-      start: {
-        dateTime: new Date(task.dueDate).toISOString(),
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      },
-      end: {
-        dateTime: new Date(new Date(task.dueDate).getTime() + 30 * 60000).toISOString(),
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      },
-      extendedProperties: {
-        private: {
-          taskId: task.id,
-          boardId: task.boardId,
-          status: task.status,
-        },
-      },
-    };
+        // Update event resource
+        const eventResource: calendar_v3.Schema$Event = {
+            ...existingEvent.data,
+            summary: task.name,
+            description: task.description || '',
+            start: {
+              dateTime: new Date(task.dueDate).toISOString(),
+              timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            },
+            end: {
+              dateTime: new Date(new Date(task.dueDate).getTime() + 30 * 60000).toISOString(),
+              timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            },
+            extendedProperties: {
+              private: {
+                taskId: task.id,
+                boardId: task.boardId,
+                status: task.status,
+              },
+            },
+          };
+
+          
     
     // Update reminders if needed
     if (task.reminderTime) {
-      eventResource.reminders = {
-        useDefault: false,
-        overrides: [
-          {
-            method: 'popup',
-            minutes: Math.floor((task.dueDate.getTime() - task.reminderTime.getTime()) / 60000),
-          },
-        ],
-      };
-    }
+        eventResource.reminders = {
+          useDefault: false,
+          overrides: [
+            {
+              method: 'popup',
+              minutes: Math.floor((task.dueDate.getTime() - task.reminderTime.getTime()) / 60000),
+            },
+          ],
+        };
+      }
+
     
     // Update the event
     await calendar.events.update({
@@ -165,6 +186,13 @@ export async function deleteCalendarEvent(userId: string, task: Task): Promise<b
 
     const calendar = await getCalendarApi(userId);
     
+
+   // If calendar is null, user is not authenticated
+   if (!calendar) {
+    return false;
+  }
+
+
     // Get user's calendar settings
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -188,6 +216,14 @@ export async function deleteCalendarEvent(userId: string, task: Task): Promise<b
 
 // Sync a task with Google Calendar
 export async function syncTaskWithCalendar(userId: string, task: Task): Promise<Task> {
+
+ // If calendar integration is not available, return the task unchanged
+ const calendar = await getCalendarApi(userId);
+ if (!calendar) {
+   return {...task, isCalendarSynced: false, calendarEventId: null};
+ }
+ 
+
   // If task is already synced, update the existing event
   if (task.isCalendarSynced && task.calendarEventId) {
     const success = await updateCalendarEvent(userId, task);
