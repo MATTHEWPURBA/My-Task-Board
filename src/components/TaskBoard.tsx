@@ -8,6 +8,7 @@ import Sidebar from './Sidebar';
 import BoardHeader from './BoardHeader';
 import DroppableColumn from './DroppableColumn';
 import EmptyBoardNotification from './EmptyBoardNotification';
+import CalendarView from './CalendarView'; // Import the CalendarView component
 import { 
   DndContext, 
   DragEndEvent,
@@ -30,12 +31,11 @@ interface TaskBoardProps {
 const statuses: TaskStatus[] = ['To Do', 'In Progress', 'Completed', "Won't do"];
 
 const TaskBoard: React.FC<TaskBoardProps> = ({ board }) => {
+  const [activeTab, setActiveTab] = useState<'board' | 'calendar'>('board');
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
-  const [
-    showEmptyNotification, 
-    setShowEmptyNotification] = useState(false);
+  const [showEmptyNotification, setShowEmptyNotification] = useState(false);
   const [notification, setNotification] = useState<{
     show: boolean;
     message: string;
@@ -155,15 +155,47 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ board }) => {
     }, 3000);
   };
 
-  return (
-    <div className="max-w-7xl mx-auto p-4">
-      <BoardHeader board={board} />
-      
-      {showEmptyNotification ? (
-        <EmptyBoardNotification 
-          onAddTask={() => handleAddNewTask()} 
-        />
-      ) : (
+
+ // Add tabs renderer
+ const renderTabs = () => (
+  <div className="flex border-b border-gray-200 mb-4">
+    <button
+      onClick={() => setActiveTab('board')}
+      className={`py-2 px-4 font-medium ${
+        activeTab === 'board' 
+          ? 'text-blue-600 border-b-2 border-blue-500' 
+          : 'text-gray-500 hover:text-gray-700'
+      }`}
+    >
+      Board View
+    </button>
+    <button
+      onClick={() => setActiveTab('calendar')}
+      className={`py-2 px-4 font-medium ${
+        activeTab === 'calendar' 
+          ? 'text-blue-600 border-b-2 border-blue-500' 
+          : 'text-gray-500 hover:text-gray-700'
+      }`}
+    >
+      Calendar View
+    </button>
+  </div>
+);
+
+
+return (
+  <div className="max-w-7xl mx-auto p-4">
+    <BoardHeader board={board} />
+    
+    {/* Only show tabs if the board is not empty */}
+    {!showEmptyNotification && renderTabs()}
+    
+    {showEmptyNotification ? (
+      <EmptyBoardNotification 
+        onAddTask={() => handleAddNewTask()} 
+      />
+    ) : (
+      activeTab === 'board' ? (
         <DndContext
           sensors={sensors}
           onDragStart={handleDragStart}
@@ -198,53 +230,55 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ board }) => {
             ) : null}
           </DragOverlay>
         </DndContext>
-      )}
-      
-      {/* Add new task button */}
-      <div className="sticky bottom-0 bg-white p-4 border-t border-gray-200 mt-8">
-        <button
-          onClick={() => handleAddNewTask()}
-          className="flex items-center bg-orange-100 text-black py-4 px-5 rounded-2xl w-full justify-start text-xl font-semibold border border-gray-200 hover:bg-orange-200 transition-colors"
-        >
-          <span className="bg-orange-400 p-3 rounded-full mr-4 flex items-center justify-center text-white">
-            +
-          </span>
-          Add New Task
-        </button>
-      </div>
-      
-      {/* Task Sidebar */}
-      <Sidebar
-        isOpen={sidebarOpen}
-        onClose={handleCloseSidebar}
-        task={selectedTask}
-      />
-      
-      {/* Notification */}
-      <AnimatePresence>
-        {notification.show && (
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className={`fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-full shadow-lg
-              ${notification.type === 'success' ? 'bg-green-100 text-green-800 border border-green-300' : 
-                notification.type === 'error' ? 'bg-red-100 text-red-800 border border-red-300' : 
-                'bg-blue-100 text-blue-800 border border-blue-300'}`}
-          >
-            <div className="flex items-center">
-              <span className="mr-2">
-                {notification.type === 'success' ? '✅' : 
-                  notification.type === 'error' ? '❌' : 'ℹ️'}
-              </span>
-              <p>{notification.message}</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      ) : (
+        <CalendarView tasks={board.tasks} onTaskSelect={handleTaskSelect} />
+      )
+    )}
+    
+    {/* Add new task button */}
+    <div className="sticky bottom-0 bg-white p-4 border-t border-gray-200 mt-8">
+      <button
+        onClick={() => handleAddNewTask()}
+        className="flex items-center bg-orange-100 text-black py-4 px-5 rounded-2xl w-full justify-start text-xl font-semibold border border-gray-200 hover:bg-orange-200 transition-colors"
+      >
+        <span className="bg-orange-400 p-3 rounded-full mr-4 flex items-center justify-center text-white">
+          +
+        </span>
+        Add New Task
+      </button>
     </div>
-  );
+    
+    {/* Task Sidebar */}
+    <Sidebar
+      isOpen={sidebarOpen}
+      onClose={handleCloseSidebar}
+      task={selectedTask}
+    />
+    
+    {/* Notification */}
+    <AnimatePresence>
+      {notification.show && (
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className={`fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-full shadow-lg
+            ${notification.type === 'success' ? 'bg-green-100 text-green-800 border border-green-300' : 
+              notification.type === 'error' ? 'bg-red-100 text-red-800 border border-red-300' : 
+              'bg-blue-100 text-blue-800 border border-blue-300'}`}
+        >
+          <div className="flex items-center">
+            <span className="mr-2">
+              {notification.type === 'success' ? '✅' : 
+                notification.type === 'error' ? '❌' : 'ℹ️'}
+            </span>
+            <p>{notification.message}</p>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </div>
+);
 };
-
 
 export default TaskBoard;

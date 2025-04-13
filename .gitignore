@@ -35,3 +35,4 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env
+GOOGLE_client_secret_72004730507-mctr6nhl3haj47kk4tl69re66god8tr4.apps.googleusercontent.com.json

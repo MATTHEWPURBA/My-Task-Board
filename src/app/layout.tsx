@@ -37,6 +37,13 @@ export default function RootLayout({
             
             <div className="flex items-center space-x-4">
               <Link 
+                href="/calendar-settings" 
+                className="text-gray-500 hover:text-gray-900 font-medium rounded-full hover:bg-gray-100 px-4 py-2 transition-colors flex items-center"
+              >
+                <span className="text-xl mr-2">📅</span>
+                <span className="hidden sm:inline">Calendar Settings</span>
+              </Link>
+              <Link 
                 href="/" 
                 className="text-gray-500 hover:text-gray-900 font-medium rounded-full hover:bg-gray-100 px-4 py-2 transition-colors"
               >

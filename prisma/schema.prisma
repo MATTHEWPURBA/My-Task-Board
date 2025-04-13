@@ -1,4 +1,4 @@
-// This is your Prisma schema file
+// schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,16 +15,55 @@ model Board {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   tasks       Task[]
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
 }
 
 model Task {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  icon        String?  @default("📝") // Default emoji icon
-  status      String   @default("In Progress")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  boardId     String
-  board       Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  id              String    @id @default(uuid())
+  name            String
+  description     String?
+  icon            String?   @default("📝") // Default emoji icon
+  status          String    @default("In Progress")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  boardId         String
+  board           Board     @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  
+  // Calendar integration fields
+  dueDate         DateTime?
+  reminderTime    DateTime?
+  isCalendarSynced Boolean   @default(false)
+  calendarEventId String?
+}
+
+// New models for Google Calendar integration
+model User {
+  id               String            @id @default(uuid())
+  email            String            @unique
+  name             String?
+  googleTokens     GoogleTokens?
+  calendarSettings CalendarSettings?
+  boards           Board[]
+}
+
+model GoogleTokens {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken  String
+  refreshToken String
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model CalendarSettings {
+  id                String  @id @default(uuid())
+  userId           String  @unique
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enabled          Boolean @default(true)
+  defaultCalendarId String?
+  syncCompletedTasks Boolean @default(true)
+  syncWontDoTasks   Boolean @default(false)
 }

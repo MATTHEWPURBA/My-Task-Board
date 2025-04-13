@@ -6,6 +6,8 @@ interface BoardState {
   board: Board | null;
   loading: boolean;
   error: string | null;
+  hasGoogleCalendarAccess: boolean;
+
 
   // Board Actions
   setBoard: (board: Board) => void;
@@ -18,14 +20,21 @@ interface BoardState {
   updateTask: (id: string, task: TaskFormData) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
   updateTaskStatus: (id: string, status: string) => Promise<void>;
+
+    // Calendar Actions
+    checkGoogleCalendarAccess: () => Promise<void>;
+    toggleTaskCalendarSync: (taskId: string, sync: boolean) => Promise<void>;
 }
 
 const useBoardStore = create<BoardState>((set, get) => ({
   board: null,
   loading: false,
   error: null,
+  hasGoogleCalendarAccess: false,
 
   setBoard: (board) => set({ board }),
+
+
   fetchBoard: async (boardId) => {
     try {
       set({ loading: true, error: null });
@@ -38,6 +47,9 @@ const useBoardStore = create<BoardState>((set, get) => ({
 
       const board = await response.json();
       set({ board, loading: false });
+      
+      // Check if user has Google Calendar access
+      get().checkGoogleCalendarAccess();
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : 'An unknown error occurred',
@@ -91,7 +103,6 @@ const useBoardStore = create<BoardState>((set, get) => ({
         throw new Error(errorData.details || 'Failed to create board');
       }
   
-
       const newBoard = await response.json();
       set({ board: newBoard, loading: false });
 
@@ -128,6 +139,12 @@ const useBoardStore = create<BoardState>((set, get) => ({
 
       const updatedBoard = await response.json();
       set({ board: updatedBoard, loading: false });
+      
+      // If calendar sync is enabled for this task, sync it with Google Calendar
+      if (taskData.isCalendarSynced) {
+        const newTaskId = updatedBoard.tasks[updatedBoard.tasks.length - 1].id;
+        get().toggleTaskCalendarSync(newTaskId, true);
+      }
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : 'An unknown error occurred',
@@ -139,6 +156,11 @@ const useBoardStore = create<BoardState>((set, get) => ({
   updateTask: async (id, taskData) => {
     try {
       set({ loading: true, error: null });
+      
+      // Store the previous sync state
+      const { board } = get();
+      const previousTask = board?.tasks.find(task => task.id === id);
+      const previouslySynced = previousTask?.isCalendarSynced || false;
 
       const response = await fetch(`/api/tasks/${id}`, {
         method: 'PUT',
@@ -153,7 +175,6 @@ const useBoardStore = create<BoardState>((set, get) => ({
       const updatedTask = await response.json();
 
       // Update the task in the local state
-      const { board } = get();
       if (board) {
         const updatedTasks = board.tasks.map((task) => (task.id === id ? updatedTask : task));
 
@@ -161,6 +182,15 @@ const useBoardStore = create<BoardState>((set, get) => ({
           board: { ...board, tasks: updatedTasks },
           loading: false,
         });
+      }
+      
+      // If calendar sync status changed, handle it
+      if (previouslySynced !== taskData.isCalendarSynced) {
+        get().toggleTaskCalendarSync(id, taskData.isCalendarSynced || false);
+      }
+      // If sync status didn't change but is synced and task details changed, update calendar event
+      else if (taskData.isCalendarSynced) {
+        get().toggleTaskCalendarSync(id, true);
       }
     } catch (error) {
       set({
@@ -170,9 +200,20 @@ const useBoardStore = create<BoardState>((set, get) => ({
     }
   },
 
+
   deleteTask: async (id) => {
     try {
       set({ loading: true, error: null });
+      
+      // Get the task to check if it's synced with calendar
+      const { board } = get();
+      const task = board?.tasks.find(task => task.id === id);
+      const isSynced = task?.isCalendarSynced || false;
+      
+      // If synced, remove from calendar first
+      if (isSynced) {
+        await get().toggleTaskCalendarSync(id, false);
+      }
 
       const response = await fetch(`/api/tasks/${id}`, {
         method: 'DELETE',
@@ -183,7 +224,6 @@ const useBoardStore = create<BoardState>((set, get) => ({
       }
 
       // Remove the task from the local state
-      const { board } = get();
       if (board) {
         const updatedTasks = board.tasks.filter((task) => task.id !== id);
 
@@ -200,7 +240,6 @@ const useBoardStore = create<BoardState>((set, get) => ({
     }
   },
 
-  // Add this new method
   updateTaskStatus: async (id, status) => {
     try {
       const { board } = get();
@@ -237,11 +276,72 @@ const useBoardStore = create<BoardState>((set, get) => ({
         board: { ...board, tasks: updatedTasks },
         loading: false,
       });
+      
+      // If the task is synced with calendar, update the calendar event to reflect the new status
+      if (task.isCalendarSynced) {
+        get().toggleTaskCalendarSync(id, true);
+      }
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : 'An unknown error occurred',
         loading: false,
       });
+    }
+  },
+
+
+  checkGoogleCalendarAccess: async () => {
+    try {
+      const response = await fetch('/api/calendar-settings');
+      
+      if (response.ok) {
+        const data = await response.json();
+        set({ 
+          hasGoogleCalendarAccess: data.calendars && data.calendars.length > 0 
+        });
+      } else if (response.status === 401) {
+        // Don't show error for auth issues - just set to false
+        set({ hasGoogleCalendarAccess: false });
+      }
+    } catch (error) {
+      // Simply set to false without logging the error to avoid console noise
+      set({ hasGoogleCalendarAccess: false });
+    }
+  },
+  
+  // Toggle task calendar sync
+  toggleTaskCalendarSync: async (taskId, sync) => {
+    try {
+      const response = await fetch(`/api/tasks/${taskId}/calendar-sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ syncWithCalendar: sync }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to sync task with calendar');
+      }
+      
+      const { success, synced } = await response.json();
+      
+      if (success) {
+        // Update the task in the local state
+        const { board } = get();
+        if (board) {
+          const updatedTasks = board.tasks.map((task) => {
+            if (task.id === taskId) {
+              return { ...task, isCalendarSynced: synced };
+            }
+            return task;
+          });
+          
+          set({
+            board: { ...board, tasks: updatedTasks },
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling task calendar sync:', error);
     }
   },
 }));

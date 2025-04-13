@@ -1,3 +1,5 @@
+// This is a Next.js configuration file that sets up environment variables and headers for API routes.
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 
