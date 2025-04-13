@@ -6,6 +6,7 @@
     "dev": "prisma generate && prisma migrate deploy && next dev",
     "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
+    "migrate":"npx ts-node prisma/migrations/manual/update-board-ownership.ts",
     "lint": "next lint"
   },
   "prisma": {

@@ -8,8 +8,6 @@ import prisma from "@/lib/db";
 // Secret key for JWT signing
 const JWT_SECRET = process.env.JWT_SECRET || "demo-secret-key-for-development-only";
 
-
-
 // Add this GET handler to your existing file
 export async function GET(request: NextRequest) {
     try {
@@ -73,11 +71,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Failed to create demo user" }, { status: 500 });
     }
   }
-
-
-
-
-
 
 export async function POST(request: NextRequest) {
   try {

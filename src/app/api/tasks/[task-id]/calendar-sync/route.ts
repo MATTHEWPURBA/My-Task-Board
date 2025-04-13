@@ -44,9 +44,19 @@ export async function POST(
       return NextResponse.json({ error: "Task not found" }, { status: 404 });
     }
     
-    // Check if the user owns the board
-    if (task.board.userId !== userId) {
+    // Modified ownership check - allow access if:
+    // 1. The board has no owner (userId is null)
+    // 2. The board owner matches the authenticated user
+    if (task.board.userId !== null && task.board.userId !== userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+    
+    // If the board has no owner, assign it to this user
+    if (task.board.userId === null) {
+      await prisma.board.update({
+        where: { id: task.board.id },
+        data: { userId: userId }
+      });
     }
     
     // Update the task's sync status

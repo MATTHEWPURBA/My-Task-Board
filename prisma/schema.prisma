@@ -8,16 +8,58 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// New models for Google Calendar integration
+model User {
+  id               String            @id @default(uuid())
+  email            String            @unique
+  name             String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @default(now())
+  googleTokens     GoogleTokens?
+  calendarSettings CalendarSettings?
+  boards           Board[]           // Relation to boards
+}
+
+
+
+model GoogleTokens {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  accessToken  String
+  refreshToken String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+
+model CalendarSettings {
+  id                String  @id @default(uuid())
+  userId           String  @unique
+  enabled          Boolean @default(true)
+  defaultCalendarId String?
+  syncCompletedTasks Boolean @default(true)
+  syncWontDoTasks   Boolean @default(false)
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+
+
 model Board {
   id          String   @id @default(uuid())
   name        String   @default("My Task Board")
   description String?
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @default(now()) // Add default value
+  userId      String?  // Make it optional to handle existing boards
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   tasks       Task[]
-  userId      String?
-  user        User?    @relation(fields: [userId], references: [id])
 }
+
+
 
 model Task {
   id              String    @id @default(uuid())
@@ -26,7 +68,7 @@ model Task {
   icon            String?   @default("📝") // Default emoji icon
   status          String    @default("In Progress")
   createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  updatedAt       DateTime  @default(now()) // Add default value
   boardId         String
   board           Board     @relation(fields: [boardId], references: [id], onDelete: Cascade)
   
@@ -35,35 +77,4 @@ model Task {
   reminderTime    DateTime?
   isCalendarSynced Boolean   @default(false)
   calendarEventId String?
-}
-
-// New models for Google Calendar integration
-model User {
-  id               String            @id @default(uuid())
-  email            String            @unique
-  name             String?
-  googleTokens     GoogleTokens?
-  calendarSettings CalendarSettings?
-  boards           Board[]
-}
-
-model GoogleTokens {
-  id           String   @id @default(uuid())
-  userId       String   @unique
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken  String
-  refreshToken String
-  expiresAt    DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-}
-
-model CalendarSettings {
-  id                String  @id @default(uuid())
-  userId           String  @unique
-  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  enabled          Boolean @default(true)
-  defaultCalendarId String?
-  syncCompletedTasks Boolean @default(true)
-  syncWontDoTasks   Boolean @default(false)
 }
