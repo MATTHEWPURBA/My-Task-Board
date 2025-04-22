@@ -13,7 +13,7 @@ import { calendar_v3 } from 'googleapis';
 const rahasia = process.env.JWT_SECRET as string;
 
 // GET /api/calendar-settings - Get user's calendar settings and available calendars
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Get the current user ID from the authenticated session
     const cookieStore = cookies();

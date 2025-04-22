@@ -4,6 +4,7 @@ import prisma from '@/lib/db';
 import { syncTaskWithCalendar } from '@/lib/google-calendar';
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
+import { TaskStatus } from '@/types';
 
 // Secret key for JWT verification
 const rahasia = process.env.JWT_SECRET as string;
@@ -91,7 +92,7 @@ try {
         name: updatedTask.name,
         description: updatedTask.description || "",
         icon: updatedTask.icon || "📝",
-        status: updatedTask.status as any,
+        status: updatedTask.status as TaskStatus,
         createdAt: updatedTask.createdAt,
         updatedAt: updatedTask.updatedAt,
         boardId: updatedTask.boardId,
@@ -176,7 +177,7 @@ if (userId && existingTask.isCalendarSynced && existingTask.calendarEventId) {
       name: existingTask.name,
       description: existingTask.description || "",
       icon: existingTask.icon || "📝",
-      status: existingTask.status as any,
+      status: existingTask.status as TaskStatus,
       createdAt: existingTask.createdAt,
       updatedAt: existingTask.updatedAt,
       boardId: existingTask.boardId,

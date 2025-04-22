@@ -37,14 +37,18 @@ export async function PUT(
     
     // Check if this is a board update or task addition
     if (body.action === 'addTask') {
-      // Adding a new task to the board
-      await prisma.task.create({
+      // Adding a new task to the board with calendar fields
+       await prisma.task.create({
         data: {
           name: body.task.name || 'New Task',
           description: body.task.description || '',
           icon: body.task.icon || '📝',
           status: body.task.status,
-          boardId: boardId
+          boardId: boardId,
+          // Include calendar-related fields
+          dueDate: body.task.dueDate ? new Date(body.task.dueDate) : null,
+          reminderTime: body.task.reminderTime ? new Date(body.task.reminderTime) : null,
+          isCalendarSynced: body.task.isCalendarSynced || false,
         }
       });
       

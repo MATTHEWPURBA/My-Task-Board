@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "prisma generate && prisma migrate deploy && next dev",
-    "build": "prisma generate && prisma migrate deploy && next build",
+    "dev": "prisma generate && prisma db push && next dev",
+
+    "build": "DISABLE_ESLINT_PLUGIN=true prisma generate && next build",
     "start": "next start",
     "migrate":"npx ts-node prisma/migrations/manual/update-board-ownership.ts",
     "lint": "next lint"

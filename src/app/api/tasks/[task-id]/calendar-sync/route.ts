@@ -4,6 +4,7 @@ import { syncTaskWithCalendar } from '@/lib/google-calendar';
 import prisma from '@/lib/db';
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { TaskStatus } from '@/types';
 
 // Secret key for JWT verification
 const rahasia = process.env.JWT_SECRET as string;
@@ -73,7 +74,7 @@ export async function POST(
         name: updatedTask.name,
         description: updatedTask.description || "",
         icon: updatedTask.icon || "📝",
-        status: updatedTask.status as any,
+        status: updatedTask.status as TaskStatus,
         createdAt: updatedTask.createdAt,
         updatedAt: updatedTask.updatedAt,
         boardId: updatedTask.boardId,
@@ -104,7 +105,7 @@ export async function POST(
         name: updatedTask.name,
         description: updatedTask.description || "",
         icon: updatedTask.icon || "📝",
-        status: updatedTask.status as any,
+        status: updatedTask.status as TaskStatus,
         createdAt: updatedTask.createdAt,
         updatedAt: updatedTask.updatedAt,
         boardId: updatedTask.boardId,

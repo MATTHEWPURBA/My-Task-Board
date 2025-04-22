@@ -3,7 +3,7 @@
 
 import React, { useState } from 'react';
 import { Task } from '@/types';
-import { startOfMonth, endOfMonth, eachDayOfInterval, format, isToday, isSameDay } from 'date-fns';
+import { startOfMonth, endOfMonth, eachDayOfInterval, format, isToday } from 'date-fns';
 
 interface CalendarViewProps {
   tasks: Task[];

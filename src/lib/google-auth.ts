@@ -1,6 +1,6 @@
 // src/lib/google-auth.ts
 import { google } from 'googleapis';
-import { cookies } from 'next/headers';
+// import { cookies } from 'next/headers';
 import prisma from './db';
 
 // These would be environment variables in a real application
@@ -40,6 +40,7 @@ interface GoogleTokenResponse {
   id_token?: string;
   expiry_date?: number;
 }
+
 
 // Exchange authorization code for tokens
 export async function getTokensFromCode(code: string) {

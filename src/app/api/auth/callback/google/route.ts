@@ -5,6 +5,8 @@ import { cookies } from 'next/headers';
 import { jwtVerify, SignJWT } from 'jose'; // Added SignJWT to imports
 import prisma from '@/lib/db';
 import { v4 as uuidv4 } from 'uuid';
+export const dynamic = 'force-dynamic';
+
 
 // Secret key for JWT verification
 const JWT_SECRET = process.env.JWT_SECRET || 'demo-secret-key-for-development-only';
